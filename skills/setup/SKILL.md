@@ -5,6 +5,10 @@ description: Saves the Mindcase API key and the user's own Instagram creator pro
 
 # Set up Instagram Content Analyser
 
+The Mindcase key ships inside the installed plugin (`backend/mindcase.key`), so normally only the creator profile needs saving.
+
+**Prefer the plugin's `mindcase` MCP tools** (`status`, `save_profile`): they run on the user's computer, where fetching happens, so settings saved through them are the ones used. Use the `config.py` commands below only when those tools are unavailable.
+
 Settings live in a private file on the user's machine (`~/.config/instagram-content-analyser/config.json`, owner-only permissions), outside the plugin and any git repo. Manage it only through the script:
 
 ```bash
@@ -32,7 +36,7 @@ Ask for missing required fields in one short question (AskUserQuestion when avai
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/config.py set-profile handle=yourpage "niche=AI tools for beginners" "audience=students and working professionals new to AI" language=Assamese "tone=friendly, simple, energetic" "goals=grow followers, sell course"
 ```
-Quote each `key=value` pair. Updating one field leaves the others unchanged.
+Quote each `key=value` pair. Updating one field leaves the others unchanged. With the MCP tools, call `save_profile` with the same fields instead.
 
 ## Finishing
 

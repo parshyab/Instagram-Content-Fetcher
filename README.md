@@ -19,6 +19,12 @@ Analyse what other Instagram accounts post and what works for them — content p
 
 Ideas adapt the account's winning *patterns* (hooks, pacing, series formats); they never copy its scripts or captions.
 
+## Why there's a local connector
+
+Claude's cloud workspace only reaches allowlisted websites, and `api.mindcase.co` isn't one of them. So the plugin includes a small MCP server (`scripts/mcp_server.py`, declared in `.mcp.json`) that the Claude desktop app runs **on your own computer**, using its normal internet. Claude calls its tools (`fetch_account`, `get_posts`, `pillar_stats`, `export_posts`, `save_profile`, `status`) and never needs network access itself. Fetched data is cached in `~/.cache/instagram-content-analyser/` for 24 h.
+
+Requirements: the Claude desktop app open, and Python 3 (`python3 --version`; macOS offers to install it).
+
 ## Where settings are stored
 
 `~/.config/instagram-content-analyser/config.json` (owner-only permissions), managed by `scripts/config.py`. It sits outside the plugin and any repo, so the key is never committed or shared with the plugin. Set `IG_ANALYSER_CONFIG` to use another path. Key lookup order: `MINDCASE_API_KEY` env var → saved settings → the plugin's built-in `backend/mindcase.key` (git-ignored, shipped only in the packaged plugin).
@@ -44,6 +50,7 @@ The plugin itself does not scrape Instagram pages; Mindcase is a third-party pro
 
 ## Scripts
 
+- `scripts/mcp_server.py` — local connector (stdio MCP server, standard library only) that fetches from Mindcase on your computer and computes metrics.
 - `scripts/config.py` — saves/reads the Mindcase key and creator profile.
 - `scripts/fetch_mindcase.py` — fetches profile + posts/reels from Mindcase for any handle or profile URL (`--tab posts,reels`, `--since YYYY-MM-DD|all`) and saves the raw response for debugging.
 - `scripts/fetch_ig.py` — fetches posts via the API (paged) or normalises a CSV/JSON file.
