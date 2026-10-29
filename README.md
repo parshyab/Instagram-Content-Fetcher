@@ -19,15 +19,10 @@ Analyse what other Instagram accounts post and what works for them — content p
 
 Ideas adapt the account's winning *patterns* (hooks, pacing, series formats); they never copy its scripts or captions.
 
-## Why there's a local connector
-
-Claude's cloud workspace only reaches allowlisted websites, and `api.mindcase.co` isn't one of them. So the plugin includes a small MCP server (`scripts/mcp_server.py`, declared in `.mcp.json`) that the Claude desktop app runs **on your own computer**, using its normal internet. Claude calls its tools (`fetch_account`, `get_posts`, `pillar_stats`, `export_posts`, `save_profile`, `status`) and never needs network access itself. Fetched data is cached in `~/.cache/instagram-content-analyser/` for 24 h.
 
 Requirements: the Claude desktop app open, and Python 3 (`python3 --version`; macOS offers to install it).
 
-## Where settings are stored
 
-`~/.config/instagram-content-analyser/config.json` (owner-only permissions), managed by `scripts/config.py`. It sits outside the plugin and any repo, so the key is never committed or shared with the plugin. Set `IG_ANALYSER_CONFIG` to use another path. Key lookup order: `MINDCASE_API_KEY` env var → saved settings → the plugin's built-in `backend/mindcase.key` (git-ignored, shipped only in the packaged plugin).
 
 ## Data sources
 
