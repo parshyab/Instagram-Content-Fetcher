@@ -1,6 +1,6 @@
 ---
 name: analyze-instagram-account
-description: Analyses the posts of another Instagram account to explain what content it creates and what works. Use when the user says "analyse @handle on Instagram", "what kind of content does this account post", "break down this creator's Instagram", "audit this competitor's posts", "what are their content pillars", or shares an Instagram profile link or an export of someone's posts.
+description: Produces an analysis report (no content creation) of another Instagram account's posts and reels, explaining what content it creates and what works. Use when the user explicitly asks for analysis, e.g. "analyse @handle on Instagram", "what kind of content does this account post", "break down this creator's Instagram", "audit this competitor's posts", "what are their content pillars", or shares an export of someone's posts. A bare pasted profile link goes to the reels-to-content skill instead.
 ---
 
 # Analyse an Instagram account
@@ -12,7 +12,7 @@ Produce an evidence-based breakdown of one Instagram account's content: pillars,
 Pick the source in this order:
 
 1. **Supplied data first.** If the user attached or pasted post data (CSV, JSON, a table, or screenshots), use it. For screenshots, transcribe each visible post into rows (caption, format, likes, comments, views, date) in a CSV in the working directory before continuing.
-2. **Mindcase API (default for any public account).** If `MINDCASE_API_KEY` is set, run:
+2. **Mindcase API (default for any public account).** The key is read from the saved settings (or `MINDCASE_API_KEY`). Run:
    ```bash
    python3 ${CLAUDE_PLUGIN_ROOT}/scripts/fetch_mindcase.py <handle or profile URL> --tab posts,reels --since <YYYY-MM-DD> --out <handle>_posts.json
    ```
@@ -21,13 +21,14 @@ Pick the source in this order:
    - `--since`: use the user's date; otherwise default to 2 years back. Narrow it (e.g. 6–12 months) if the user cares about credits or speed.
    - Works for personal and business accounts as long as they are public.
    - If the script warns that captions, likes or timestamps are empty, open `<handle>_mindcase_raw.json`, find the actual field names, and map them in a short Python snippet before analysing. If it finds no records, the run may still be processing: show the user the status from the raw file.
-   - Never echo the key. If the user pastes a key in chat, pass it only as an environment variable for the command and suggest storing it as `MINDCASE_API_KEY`.
+   - If the script prints `NO_MINDCASE_KEY`, follow the `setup` skill to save the key once, then retry.
+   - Never echo the key.
 3. **Graph API.** Otherwise, if `IG_ACCESS_TOKEN` and `IG_USER_ID` are set, run:
    ```bash
    python3 ${CLAUDE_PLUGIN_ROOT}/scripts/fetch_ig.py api <username> --limit 200 --out <username>_posts.json
    ```
    Default to the latest 200 posts; use the user's number if they give one ("all posts" → `--limit` equal to the account's media count, capped at 1000 unless they insist).
-4. **None available.** Explain the options in plain language: add a Mindcase API key (`MINDCASE_API_KEY`), connect the Graph API (walk them through `references/graph-api-setup.md`), or export/paste the posts. Do not scrape Instagram pages yourself or log in as the user to collect posts.
+4. **None available.** Explain the options in plain language: save a Mindcase key (the `setup` skill), connect the Graph API (walk them through `references/graph-api-setup.md`), or export/paste the posts. Do not scrape Instagram pages yourself or log in as the user to collect posts.
 
 For supplied files, normalise them:
 ```bash

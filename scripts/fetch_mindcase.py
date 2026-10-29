@@ -6,14 +6,17 @@ Usage:
   fetch_mindcase.py <handle|@handle|profile URL> [--tab reels|posts|posts,reels]
                     [--since YYYY-MM-DD] [--out posts.json] [--no-profile]
 
+Key: read from MINDCASE_API_KEY, else the saved settings file (see config.py)
 Env:
-  MINDCASE_API_KEY   Mindcase key (mk_live_...)
+  MINDCASE_API_KEY   optional override
   MINDCASE_BASE_URL  Optional, defaults to https://api.mindcase.co/api/v1
 
 Writes <handle>_posts.json ({"account": {...}, "posts": [...]}) plus the raw
 API responses as <handle>_mindcase_raw.json for debugging field mappings.
 """
 import argparse, json, os, re, sys, time, urllib.error, urllib.request
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from config import mindcase_key  # noqa: E402
 from datetime import date, timedelta
 
 BASE = os.environ.get("MINDCASE_BASE_URL", "https://api.mindcase.co/api/v1").rstrip("/")
@@ -142,14 +145,17 @@ def main():
     ap.add_argument("handle")
     ap.add_argument("--tab", default="reels", help="reels, posts, or both comma-separated (Mindcase tab param)")
     ap.add_argument("--since", default=(date.today() - timedelta(days=730)).isoformat(),
-                    help="onlyPostsNewerThan, YYYY-MM-DD (default: 2 years ago)")
+                    help="onlyPostsNewerThan, YYYY-MM-DD (default: 2 years ago; use 'all' for everything)")
     ap.add_argument("--out")
     ap.add_argument("--no-profile", action="store_true")
     a = ap.parse_args()
+    if a.since.lower() == "all":
+        a.since = "2010-10-06"  # Instagram launch date: fetch everything
 
-    key = os.environ.get("MINDCASE_API_KEY")
+    key = mindcase_key()
     if not key:
-        sys.exit("Missing MINDCASE_API_KEY (your mk_live_... key).")
+        sys.exit("NO_MINDCASE_KEY: no Mindcase key saved. Save one with: "
+                 "config.py set-key <mk_live_...>")
     h = handle_of(a.handle)
     profile_url = f"https://www.instagram.com/{h}/"
     raw = {}

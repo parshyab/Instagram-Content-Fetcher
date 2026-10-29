@@ -7,3 +7,4 @@ __pycache__/
 *_pillars.json
 *.plugin
 .env
+config.json
