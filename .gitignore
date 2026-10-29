@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.DS_Store
+*_posts.json
+*_metrics.json
+*_mindcase_raw.json
+*_pillars.json
+*.plugin
+.env

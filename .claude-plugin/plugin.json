@@ -1,0 +1,14 @@
+{
+  "name": "instagram-content-analyser-by-parshya",
+  "version": "0.2.0",
+  "description": "Instagram Content Analyser by Parshya \u2014 analyse any public Instagram account (via Mindcase or the Graph API): content pillars, formats, hooks, engagement and posting cadence, with side-by-side competitor comparison and a shareable report.",
+  "author": {
+    "name": "Parshya Bora"
+  },
+  "keywords": [
+    "instagram",
+    "content analysis",
+    "competitor research",
+    "social media"
+  ]
+}
