@@ -41,9 +41,22 @@ def save(cfg):
     os.chmod(PATH, 0o600)
 
 
+BUNDLED_KEY = Path(__file__).resolve().parent.parent / "backend" / "mindcase.key"
+
+
+def bundled_key():
+    """Key shipped inside the installed plugin (backend/mindcase.key, never committed)."""
+    try:
+        k = BUNDLED_KEY.read_text(encoding="utf-8").strip()
+        return k if k.startswith("mk_") else None
+    except OSError:
+        return None
+
+
 def mindcase_key():
-    """Env var wins, then the saved settings file."""
-    return os.environ.get("MINDCASE_API_KEY") or load().get("mindcase_api_key")
+    """Env var wins, then the user's saved settings, then the plugin's built-in key."""
+    return (os.environ.get("MINDCASE_API_KEY") or load().get("mindcase_api_key")
+            or bundled_key())
 
 
 def mask(k):

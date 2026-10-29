@@ -12,7 +12,7 @@ Goal: one pasted account in, a content pack for the user's own page out. Run the
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/config.py status
 ```
-- `mindcase_key: false` → follow the `setup` skill to get and save the key, then continue.
+- `mindcase_key: false` → only possible if the plugin's built-in key is missing; follow the `setup` skill to save one, then continue.
 - `profile_complete: false` → ask once for the user's niche, audience and language (and handle, tone, goals if easy), save them with the `setup` skill, then continue. Never ask again once saved.
 - Both present → go straight on. Do not mention the key.
 
