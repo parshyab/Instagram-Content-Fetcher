@@ -15,9 +15,9 @@ Analyse what other Instagram accounts post and what works for them — content p
 
 1. The Mindcase key is built into the installed plugin (`backend/mindcase.key`, see `backend/README.md`), so there's nothing to paste. First run: answer three questions about your page (niche, audience, language). They're saved privately; you're never asked again.
 2. Paste any account link, e.g. `https://www.instagram.com/namaskar.ai/`.
-3. Get a content pack doc: what works for that account, 10 ready-to-film reels adapted to your niche and language, and a 2-week posting plan.
+3. Get a remake pack doc: what works for that account, then a reel-for-reel remake of its top reels for your profile (same topic, hook type, structure and format, written fresh in your language), plus a 2-week posting plan.
 
-Ideas adapt the account's winning *patterns* (hooks, pacing, series formats); they never copy its scripts or captions.
+Remakes keep what makes each reel perform and replace the words, so you're never posting copies of someone else's script.
 
 ## Why there's a local connector
 
