@@ -22,11 +22,14 @@ Call `status`.
 
 ## 1. Fetch and measure all reels
 
-Call `fetch_account` with `account` = the pasted link or handle, `tab: "reels"`, `since: "all"`, `timezone` = the user's IANA timezone. It returns computed metrics (format mix, cadence, best times, engagement, views, hooks, CTAs, hashtags, top and bottom posts). Use only these numbers. Never estimate.
+Call `fetch_account` with `account` = the pasted link or handle, `tab: "reels"`, `since: "all"`, `timezone` = the user's IANA timezone.
 
-- Results are cached for 24 h; pass `refresh: true` only if the user asks for fresh data.
-- Use a narrower `since` only if the user asks.
-- Optionally, if the profile has a `handle`, also call `fetch_account` for the user's own account with `since` = 6 months ago, to match their voice and avoid repeating their topics. Skip on error.
+- Big accounts take several minutes. If the result says `status: "running"`, tell the user once in a short line (e.g. "Fetching @handle's reels — 40 so far"), then keep calling `fetch_account` with the **same arguments** until `status` is `"ready"`. Each call waits about 40 s and continues the same run; it never starts or pays for a second job. Don't wait between calls and don't ask the user.
+- If the call itself times out ("did not respond within 60s"), call `status` and then `fetch_account` again with the same arguments; never pass `refresh` or `new_job` to recover.
+- `mindcase_notices` (e.g. low balance) → mention them in one line. A run stopped at $0 keeps the reels delivered so far; analyse those and say how many.
+- `status: "no_posts"` or a `MINDCASE_HTTP_402` error → tell the user their Mindcase balance needs topping up (https://console.mindcase.co/account?tab=billing).
+- Use only the returned numbers. Never estimate. Results are cached for 24 h.
+- Optionally, if the profile has a `handle`, also fetch the user's own account (`since` = 6 months ago) to match their voice and avoid repeating their topics. Skip on error.
 
 ## 2. Classify pillars
 
@@ -36,16 +39,24 @@ Focus on what drives **views**: topics, hook styles, series/templates, length, a
 
 ## 3. Create content for the user's profile
 
-Write the content pack following `references/content-pack.md`:
-- **Adapt patterns, never copy.** Borrow the mechanics that work (hook structure, pacing, series format, CTA style, topic angle) and apply them to the user's niche and audience. Don't reuse their scripts, captions, jokes or catchphrases, or imitate their persona.
-- Write scripts, on-screen text, captions and hashtags in the profile `language` and `tone`; keep the "why it works" notes in English unless the user writes in another language.
-- Tie each idea to a specific finding with its number.
-- If the pasted account is in another niche, translate its mechanics and say so in one line.
-- Respect `avoid`; weave in `offer` on at most 1 in 4 reels.
+Default output is a **reel-for-reel remake pack**: for each of the account's top reels by views (15 by default; the user's number if given; "all" = every reel, delivered in batches of 15), write the equivalent reel for the user's profile, following `references/content-pack.md`.
+
+What a remake keeps, matching the original reel closely:
+- the same topic and promise (the same tool, problem or result),
+- the same hook *type* and structure, the same beat order and approximate length,
+- the same format (talking head, screen recording, list, before/after…), CTA type and series role.
+
+What it changes, always:
+- **all wording is new**: fresh hook lines, script, on-screen text and caption written for the user's audience. Never copy or translate their caption or lines sentence by sentence, and don't reuse catchphrases, jokes or their persona.
+- the user's own angle: their examples, their offer (at most 1 in 4 reels), their `tone`; respect `avoid`.
+
+Why: identical scripts from a same-niche account are recognised by the shared audience and can be reported for copying, so a remake keeps what makes the reel perform and replaces its words. If the user insists on word-for-word copies, explain this in one sentence and keep the remake approach.
+
+Language: scripts, on-screen text, captions and hashtags in the profile `language` and `tone`; keep the "why it works" notes in English unless the user writes in another language. Tie every remake to its source reel (link, views) and to the pattern it reuses. Mindcase returns captions and stats, not the spoken audio, so build each script from the caption, format and metrics, and say so once in Notes.
 
 ## 4. Deliver
 
-Create one shareable doc using the session's document tool (Docs artifact type or Claude Docs connector when available; otherwise a Markdown file sent to the user) titled "Content pack: inspired by @<handle>". Reply with one line naming the strongest borrowed pattern, plus the doc. Offer one next step: more reels in a winning series, or a pack from another account.
+Create one shareable doc using the session's document tool (Docs artifact type or Claude Docs connector when available; otherwise a Markdown file sent to the user) titled "Reel remakes: @<handle> → @<user handle or \"your page\">". Reply with one line naming the strongest pattern, plus the doc. Offer one next step: the next batch of remakes, or a pack from another account.
 
 ## Troubleshooting
 
