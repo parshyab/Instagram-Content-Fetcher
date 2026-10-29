@@ -12,17 +12,11 @@ Produce an evidence-based breakdown of one Instagram account's content: pillars,
 Pick the source in this order:
 
 1. **Supplied data first.** If the user attached or pasted post data (CSV, JSON, a table, or screenshots), use it. For screenshots, transcribe each visible post into rows (caption, format, likes, comments, views, date) in a CSV in the working directory before continuing.
-2. **Mindcase API (default for any public account).** The key is read from the saved settings (or `MINDCASE_API_KEY`). Run:
-   ```bash
-   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/fetch_mindcase.py <handle or profile URL> --tab posts,reels --since <YYYY-MM-DD> --out <handle>_posts.json
-   ```
-   - Accepts `namaskar.ai`, `@namaskar.ai` or a full profile URL; it calls the Mindcase `profiles` agent (followers, bio, post count) and the `posts` agent, deduplicating across tabs.
-   - `--tab`: `posts,reels` for "all their content" (default for a full analysis), `reels` when the user asks only about reels, `posts` for feed only.
-   - `--since`: use the user's date; otherwise default to 2 years back. Narrow it (e.g. 6–12 months) if the user cares about credits or speed.
-   - Works for personal and business accounts as long as they are public.
-   - If the script warns that captions, likes or timestamps are empty, open `<handle>_mindcase_raw.json`, find the actual field names, and map them in a short Python snippet before analysing. If it finds no records, the run may still be processing: show the user the status from the raw file.
-   - If the script prints `NO_MINDCASE_KEY`, follow the `setup` skill to save the key once, then retry.
-   - Never echo the key.
+2. **Mindcase via the plugin's `mindcase` MCP tools (default for any public account).** These run on the user's computer with its normal internet, so they work even though the cloud workspace blocks `api.mindcase.co`. Load them with ToolSearch ("mindcase fetch_account") if needed.
+   - Call `fetch_account` (`account`, `tab`: `posts,reels` for a full analysis, `reels` or `posts` if asked; `since`: the user's date, else `all`; `timezone`). It returns the computed metrics; skip step 2 below.
+   - For step 3, read captions with `get_posts` (page with `offset`) and compute pillar stats with `pillar_stats` instead of local scripts.
+   - `export_posts` writes the raw posts as JSON/CSV to the user's Documents folder if they want the data.
+   - If the tools aren't available, follow Troubleshooting in the `reels-to-content` skill. Never echo the key.
 3. **Graph API.** Otherwise, if `IG_ACCESS_TOKEN` and `IG_USER_ID` are set, run:
    ```bash
    python3 ${CLAUDE_PLUGIN_ROOT}/scripts/fetch_ig.py api <username> --limit 200 --out <username>_posts.json
@@ -38,7 +32,7 @@ Ask for the follower count if it is missing and engagement rate matters; otherwi
 
 If the API reports the account is not a Business/Creator account, or is age-gated, say so in one line and offer the export route.
 
-## 2. Compute the metrics
+## 2. Compute the metrics (file and Graph API sources only)
 
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/analyze.py <name>_posts.json --tz <user's IANA timezone> 
